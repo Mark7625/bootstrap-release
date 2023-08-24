@@ -16,50 +16,33 @@ class BootstrapPlugin : Plugin<Project> {
             isTransitive = false
         }
 
-        project.task("releaseClient") {
+        project.task("publishClient") {
             this.group = "client update"
-
-            dependsOn(bootstrapDependencies)
-            dependsOn("jar")
+            this.description = "Publishes Client to your ftp or aws"
+            dependsOn("release")
 
             doLast {
-                copy {
-                    from(bootstrapDependencies)
-                    into("${buildDir}/bootstrap/${extension.releaseType.get()}/")
-                }
-                copy {
-                    from("${buildDir}/repo/.", "${buildDir}/libs/",)
-                    into("${buildDir}/bootstrap/${extension.releaseType.get()}/repo/")
-                }
                 BootstrapTask(extension, project).init()
-
             }
-
-
         }
 
         project.task("generateKeys") {
             this.group = "client update"
+            this.description = "Generates the Security Keys for the Client"
             doLast {
                 val saveLocations = File("${System.getProperty("user.home")}/.gradle/releaseClient/${project.name}/")
                 Keys.generateKeys(saveLocations)
             }
         }
 
-        project.task("generateBootstrap") {
+        project.task("release") {
             this.group = "client update"
+            this.description = "Generates Client Files for Uploading"
             dependsOn(bootstrapDependencies)
             dependsOn("jar")
 
             doLast {
-                copy {
-                    from(bootstrapDependencies)
-                    into("${buildDir}/bootstrap/${extension.releaseType.get()}/")
-                }
-                copy {
-                    from("${buildDir}/repo/.", "${buildDir}/libs/",)
-                    into("${buildDir}/bootstrap/${extension.releaseType.get()}/repo/")
-                }
+                File("${buildDir}/bootstrap/").listFiles()?.forEach { it.delete() }
                 BootstrapTask(extension, project).init(false)
 
             }
