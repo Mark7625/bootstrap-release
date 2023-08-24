@@ -29,7 +29,7 @@ class BootstrapTask(
         if(!saveLocations.exists()) {
             saveLocations.mkdirs()
         }
-        val bootstrapLocation = File("${project.buildDir}/bootstrap/${extension.releaseType.get()}/bootstrap.json")
+        val bootstrapLocation = File("${project.buildDir}/bootstrap/${extension.buildType.get()}/bootstrap.json")
 
         if(!File(saveLocations,"key-private.pem").exists()) {
             logger.error { "Keys not found Generating new keys at: $saveLocations" }
@@ -39,7 +39,7 @@ class BootstrapTask(
         val defaultBootstrap = getDefaultBootstrap()
         val artifacts = getArtifacts().toMutableList()
 
-        val externalLibs =  File("${project.buildDir}/bootstrap/${extension.releaseType.get()}/repo/").listFiles()
+        val externalLibs =  File("${project.buildDir}/bootstrap/${extension.buildType.get()}/repo/").listFiles()
 
         var customRepoLink = extension.customRepo.get()
         if (customRepoLink.endsWith("/")) {
@@ -66,7 +66,7 @@ class BootstrapTask(
 
         val bootstrapFiles = listOf(
             bootstrapLocation,
-            File("${project.buildDir}/bootstrap/${extension.releaseType.get()}/bootstrap.json.sha256")
+            File("${project.buildDir}/bootstrap/${extension.buildType.get()}/bootstrap.json.sha256")
         )
 
         Keys.sha256(File(saveLocations,"key-private.pem"), bootstrapFiles[0], bootstrapFiles[1])
@@ -74,7 +74,7 @@ class BootstrapTask(
 
         if(upload) {
             val uploadManager = when(extension.uploadType.get()) {
-                UploadType.FTP -> FtpUpload(File(saveLocations,"ftp.properties"),extension.releaseType.get(), extension.passiveMode.get())
+                UploadType.FTP -> FtpUpload(File(saveLocations,"ftp.properties"),extension.buildType.get(), extension.passiveMode.get())
                 UploadType.AWS -> AwsUpload(File(saveLocations,"aws.properties"))
             }
 
@@ -140,7 +140,7 @@ class BootstrapTask(
                 it.file.name.contains("runescape-api") ||
                 it.file.name.contains("runelite-api") ||
                 it.file.name.contains("runelite-jshell")) {
-                path = "https://github.com/open-osrs/hosting/raw/master/${extension.releaseType.get()}/${it.file.name}"
+                path = "https://github.com/open-osrs/hosting/raw/master/${extension.buildType.get()}/${it.file.name}"
             } else if (it.file.name.contains("injection-annotations")) {
                 path = "https://github.com/open-osrs/hosting/raw/master/" + group.replace(".", "/") + "/${name}/$version/${it.file.name}"
             } else if (!group.contains("runelite")) {

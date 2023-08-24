@@ -1,6 +1,5 @@
 package com.mark.bootstrap.data
 
-import com.mark.bootstrap.data.Artifacts
 
 data class BootstrapManifest(
     val launcherArguments : Array<String> = emptyArray(),
@@ -14,5 +13,6 @@ data class BootstrapManifest(
     val clientJvm17MacArguments : Array<String> = emptyArray(),
     val clientJvm17Arguments : Array<String> = emptyArray(),
     var artifacts : Array<Artifacts> = emptyArray(),
+    var updates : Array<Updates> = emptyArray(),
     var dependencyHashes : Map<String,String> = emptyMap<String, String>().toMutableMap()
 )
