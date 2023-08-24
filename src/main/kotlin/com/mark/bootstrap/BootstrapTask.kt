@@ -41,15 +41,22 @@ class BootstrapTask(
 
         val externalLibs =  File("${project.buildDir}/bootstrap/${extension.releaseType.get()}/repo/").listFiles()
 
-        externalLibs.forEach {
-            artifacts.add(
-                Artifacts(
-                    hash(it.readBytes()),
-                    it.name,
-                    "${extension.baseLink.get()}/client/${extension.releaseType.get()}/repo/${it.name}",
-                    it.length()
+        var customRepoLink = extension.customRepo.get()
+        if (customRepoLink.endsWith("/")) {
+            customRepoLink = customRepoLink.dropLast(1)
+        }
+
+        if (externalLibs != null) {
+            externalLibs.forEach {
+                artifacts.add(
+                    Artifacts(
+                        hash(it.readBytes()),
+                        it.name,
+                        "$customRepoLink/${it.name}",
+                        it.length()
+                    )
                 )
-            )
+            }
         }
 
         defaultBootstrap.artifacts = artifacts.toTypedArray()
@@ -73,12 +80,14 @@ class BootstrapTask(
 
             uploadManager.connect()
 
-            val progress = progress("Uploading", externalLibs.size + 2)
+            val progress = progress("Uploading", (externalLibs?.size ?: 0) + 2)
 
-            externalLibs.forEach {
-                uploadManager.upload(it,progress)
-                progress.extraMessage = it.name
-                progress.step()
+            if (externalLibs != null) {
+                externalLibs.forEach {
+                    uploadManager.upload(it,progress)
+                    progress.extraMessage = it.name
+                    progress.step()
+                }
             }
 
             bootstrapFiles.forEach {
@@ -103,7 +112,7 @@ class BootstrapTask(
         return Klaxon().parse<BootstrapManifest>(TEMPLATE.readText())!!
     }
 
-    fun getArtifacts(): List<Artifacts> {
+    private fun getArtifacts(): List<Artifacts> {
         val artifacts = emptyList<Artifacts>().toMutableList()
 
         project.configurations.getAt("runtimeClasspath").resolvedConfiguration.resolvedArtifacts.forEach {
@@ -182,18 +191,21 @@ class BootstrapTask(
                 path = "${extension.customRepo.get()}/${it.file.name}"
             }
 
-            val filePath = it.file.absolutePath
-            val artifactFile = File(filePath)
+            if (!path.equals("${extension.customRepo.get()}/${it.file.name}")) {
+                val filePath = it.file.absolutePath
+                val artifactFile = File(filePath)
 
-            artifacts.add(
-                Artifacts(
-                hash(artifactFile.readBytes()),
-                it.file.name,
-                path,
-                artifactFile.length(),
-                platform
-            )
-            )
+                artifacts.add(
+                    Artifacts(
+                        hash(artifactFile.readBytes()),
+                        it.file.name,
+                        path,
+                        artifactFile.length(),
+                        platform
+                    )
+                )
+
+            }
 
         }
 
