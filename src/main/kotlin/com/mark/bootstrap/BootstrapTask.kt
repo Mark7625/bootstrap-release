@@ -106,7 +106,7 @@ class BootstrapTask(
         if(!TEMPLATE.exists()) {
             error(
                 "bootstrap.template does not exist at {${TEMPLATE}}," +
-                "Please add the file ${System.lineSeparator()}For more Info please look at the guide"
+                        "Please add the file ${System.lineSeparator()}For more Info please look at the guide"
             )
         }
         return Klaxon().parse<BootstrapManifest>(TEMPLATE.readText())!!
@@ -116,6 +116,10 @@ class BootstrapTask(
         val artifacts = emptyList<Artifacts>().toMutableList()
 
         project.configurations.getAt("runtimeClasspath").resolvedConfiguration.resolvedArtifacts.forEach {
+
+            if (it.file.path.contains(project.rootDir.path)) {
+                return@forEach
+            } // Skips any Local Libs
 
             var platform : MutableList<Platform>? = null
 
@@ -191,21 +195,18 @@ class BootstrapTask(
                 path = "${extension.customRepo.get()}/${it.file.name}"
             }
 
-            if (!path.equals("${extension.customRepo.get()}/${it.file.name}")) {
-                val filePath = it.file.absolutePath
-                val artifactFile = File(filePath)
+            val filePath = it.file.absolutePath
+            val artifactFile = File(filePath)
 
-                artifacts.add(
-                    Artifacts(
-                        hash(artifactFile.readBytes()),
-                        it.file.name,
-                        path,
-                        artifactFile.length(),
-                        platform
-                    )
+            artifacts.add(
+                Artifacts(
+                    hash(artifactFile.readBytes()),
+                    it.file.name,
+                    path,
+                    artifactFile.length(),
+                    platform
                 )
-
-            }
+            )
 
         }
 
