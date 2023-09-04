@@ -39,6 +39,8 @@ class BootstrapTask(
         val defaultBootstrap = getDefaultBootstrap()
         val artifacts = getArtifacts().toMutableList()
 
+        File("${project.buildDir}/bootstrap/${extension.buildType.get()}/").mkdirs()
+        
         val externalLibs =  File("${project.buildDir}/bootstrap/${extension.buildType.get()}/repo/").listFiles()
 
         var customRepoLink = extension.customRepo.get()
