@@ -42,6 +42,10 @@ class BootstrapTask(
         File("${project.buildDir}/bootstrap/${extension.buildType.get()}/").mkdirs()
 
         val externalLibDir = File("${project.buildDir}/bootstrap/${extension.buildType.get()}/repo/")
+        if (externalLibDir.exists()) {
+            externalLibDir.deleteRecursively()
+        }
+        externalLibDir.mkdirs()
 
         extension.externalLibs.get().forEach { it ->
             it.listFiles()?.filter { it.extension == "jar" }?.forEach {
@@ -106,7 +110,6 @@ class BootstrapTask(
             }
 
             progress.close()
-            externalLibDir.delete()
         }
 
     }
