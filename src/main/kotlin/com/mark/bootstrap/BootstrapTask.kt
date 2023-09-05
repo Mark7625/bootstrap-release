@@ -40,7 +40,15 @@ class BootstrapTask(
         val artifacts = getArtifacts().toMutableList()
 
         File("${project.buildDir}/bootstrap/${extension.buildType.get()}/").mkdirs()
-        
+
+        val externalLibDir = File("${project.buildDir}/bootstrap/${extension.buildType.get()}/repo/")
+
+        extension.externalLibs.get().forEach { it ->
+            it.listFiles()?.filter { it.extension == "jar" }?.forEach {
+                it.copyTo(File(externalLibDir,it.name),true)
+            }
+        }
+
         val externalLibs =  File("${project.buildDir}/bootstrap/${extension.buildType.get()}/repo/").listFiles()
 
         var customRepoLink = extension.customRepo.get()
@@ -98,7 +106,7 @@ class BootstrapTask(
             }
 
             progress.close()
-
+            externalLibDir.delete()
         }
 
     }
