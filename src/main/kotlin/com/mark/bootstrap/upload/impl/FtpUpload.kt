@@ -42,10 +42,8 @@ class FtpUpload(
                 client.enterLocalPassiveMode()
             }
             if (fileType == "Jar") {
-                client.deleteFile("/client/${type}/repo/${file.name}")
                 client.storeFile("/client/${type}/repo/${file.name}", file.inputStream())
             } else {
-                client.deleteFile("/client/${type}/${file.name}")
                 client.storeFile("/client/${type}/${file.name}", file.inputStream())
             }
         }catch (ex: Exception) {

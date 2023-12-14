@@ -77,12 +77,21 @@ class SftpUpload(
 
         if (channelSftp.isConnected) {
             println("FTP Logged in")
-            channelSftp.mkdir("/client")
-            channelSftp.mkdir("/client/${type}")
-            channelSftp.mkdir("/client/${type}/repo/")
+            exists("/client")
+            exists("/client/${type}")
+            exists("/client/${type}/repo/")
+            channelSftp.cd("/")
             connected = true
         } else {
             error("Error Logging into FTP")
+        }
+    }
+
+    fun exists(remoteDir : String) {
+        try {
+            channelSftp.cd(remoteDir)
+        } catch (e: Exception) {
+            channelSftp.mkdir(remoteDir)
         }
     }
 
