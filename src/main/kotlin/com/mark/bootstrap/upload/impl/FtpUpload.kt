@@ -55,7 +55,10 @@ class FtpUpload(
     override fun connect() {
         val properties = Properties()
         properties.load(props.inputStream())
-        client.connect(properties.getProperty("host"))
+        val port = properties.getProperty("port")?.toIntOrNull() ?: 21 // Default FTP port is 21
+
+        client.connect(properties.getProperty("host"), port)
+
         client.setFileType(FTP.BINARY_FILE_TYPE)
         val login = client.login(properties.getProperty("username"), properties.getProperty("password"))
         if (login) {
