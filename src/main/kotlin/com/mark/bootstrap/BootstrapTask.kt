@@ -111,6 +111,7 @@ class BootstrapTask(
                 progress.step()
             }
 
+            uploadManager.close()
             progress.close()
         }
 

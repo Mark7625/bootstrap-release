@@ -1,7 +1,9 @@
 package com.mark.bootstrap.upload.impl
 
+import com.jcraft.jsch.Channel
 import com.jcraft.jsch.ChannelSftp
 import com.jcraft.jsch.JSch
+import com.jcraft.jsch.Session
 import com.mark.bootstrap.upload.Uploader
 import me.tongfei.progressbar.ProgressBar
 import java.io.File
@@ -21,6 +23,10 @@ class SftpUpload(
     }
 
     lateinit var channelSftp : ChannelSftp
+
+    lateinit var channel : Channel
+
+    lateinit var session : Session
 
     override var connected: Boolean = false
 
@@ -57,14 +63,14 @@ class SftpUpload(
         val host = properties.getProperty("host")
         val username = properties.getProperty("username")
         val password = properties.getProperty("password")
-        val session = JSch().getSession(username, host, port)
+        session = JSch().getSession(username, host, port)
 
         session.setConfig("StrictHostKeyChecking", "no")
         session.setPassword(password)
         session.connect()
 
         // 2. Create the SFTP channel and connect
-        val channel = session.openChannel("sftp")
+        channel = session.openChannel("sftp")
         channel.connect()
 
         channelSftp = channel as ChannelSftp
@@ -82,5 +88,12 @@ class SftpUpload(
 
 
     override fun connected() = channelSftp.isConnected
+
+    override fun close(): Boolean {
+        channelSftp.exit()
+        channel.disconnect()
+        session.disconnect()
+        return true
+    }
 
 }

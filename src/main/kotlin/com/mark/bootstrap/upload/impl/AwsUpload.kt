@@ -45,4 +45,8 @@ class AwsUpload(
 
     override fun connected() = client.isConnected
 
+    override fun close(): Boolean {
+        return true
+    }
+
 }

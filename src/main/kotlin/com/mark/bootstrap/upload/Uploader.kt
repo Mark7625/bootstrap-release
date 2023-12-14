@@ -15,4 +15,6 @@ abstract class Uploader {
 
     abstract fun connected() : Boolean
 
+    abstract fun close() : Boolean
+
 }
