@@ -37,6 +37,8 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10")
     // https://mvnrepository.com/artifact/joda-time/joda-time
     implementation("joda-time:joda-time:2.12.2")
+// https://mvnrepository.com/artifact/com.jcraft/jsch
+    implementation("com.jcraft:jsch:0.1.55")
 
 
 }

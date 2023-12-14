@@ -7,6 +7,7 @@ import com.mark.bootstrap.data.BootstrapManifest
 import com.mark.bootstrap.data.Platform
 import com.mark.bootstrap.upload.impl.FtpUpload
 import com.mark.bootstrap.upload.impl.AwsUpload
+import com.mark.bootstrap.upload.impl.SftpUpload
 import com.mark.bootstrap.utils.Keys
 import me.tongfei.progressbar.ProgressBar
 import me.tongfei.progressbar.ProgressBarStyle
@@ -89,6 +90,7 @@ class BootstrapTask(
         if(upload) {
             val uploadManager = when(extension.uploadType.get()) {
                 UploadType.FTP -> FtpUpload(File(saveLocations,"ftp.properties"),extension.buildType.get(), extension.passiveMode.get())
+                UploadType.SFTP -> SftpUpload(File(saveLocations,"ftp.properties"),extension.buildType.get(), extension.passiveMode.get())
                 UploadType.AWS -> AwsUpload(File(saveLocations,"aws.properties"))
             }
 
