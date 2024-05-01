@@ -171,6 +171,7 @@ class BootstrapTask(
                 it.file.name.contains("substance") ||
                 it.file.name.contains("gluegen") ||
                 it.file.name.contains("jogl") ||
+                it.file.name.contains("flatlaf") ||
                 it.file.name.contains("rlawt") ||
                 it.file.name.contains("jocl")
             ) {
